@@ -14,9 +14,17 @@
             --border: rgba(255, 140, 0, 0.15);
         }
 
+        /* ANTI-COPY PROTECTION */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
         body {
             background: var(--bg); color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
@@ -25,35 +33,40 @@
             padding: 0 20px; display: flex; align-items: center; height: 54px; gap: 20px;
         }
         #logo { font-weight: bold; color: var(--accent); letter-spacing: 2px; font-family: monospace; }
-        #dots { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
-        .dot { width: 10px; height: 10px; background: var(--bg3); border-radius: 2px; border: 1px solid var(--border); transition: 0.3s; }
-        .dot.active { border-color: var(--accent); background: var(--accent-d); box-shadow: 0 0 5px var(--accent); }
-        .dot.done { background: var(--accent); border-color: var(--accent); }
+        #dots { display: flex; gap: 4px; flex: 1; justify-content: center; }
+        .dot { width: 10px; height: 10px; background: var(--bg3); border-radius: 2px; border: 1px solid var(--border); }
+        .dot.active { border-color: var(--accent); background: var(--accent-d); }
+        .dot.done { background: var(--accent); }
 
-        #main { display: grid; grid-template-columns: 380px 1fr; flex: 1; overflow: hidden; }
+        #main { display: grid; grid-template-columns: 400px 1fr; flex: 1; overflow: hidden; }
 
         #left { background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; padding: 20px; }
-        .badge { background: var(--bg3); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--blue); margin-bottom: 10px; display: inline-block; font-family: monospace; }
-        h1 { font-size: 1.4rem; margin-bottom: 10px; color: #fff; }
+        .badge { background: var(--bg3); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--blue); margin-bottom: 10px; display: inline-block; }
         .box { background: var(--bg3); border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin: 10px 0; font-size: 14px; line-height: 1.6; }
-        pre { background: #000; padding: 12px; color: var(--blue); border-radius: 4px; font-family: 'Courier New', monospace; overflow-x: auto; font-size: 13px; border: 1px solid #222; }
-        .label { font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 20px; font-weight: bold; }
+        
+        /* Reference box looks like code but can't be copied */
+        pre { 
+            background: #000; padding: 12px; color: var(--blue); border-radius: 4px; 
+            font-family: 'Courier New', monospace; font-size: 13px; border: 1px solid #222;
+            pointer-events: none; /* Prevents clicking/selecting */
+        }
 
         #right { display: flex; flex-direction: column; background: #05050a; }
         #code-editor { 
             flex: 1; background: transparent; color: #e0e8ff; 
             font-family: 'Courier New', monospace; font-size: 16px; border: none; 
-            outline: none; padding: 25px; resize: none; line-height: 1.6; caret-color: var(--accent);
+            outline: none; padding: 25px; resize: none; line-height: 1.6;
         }
 
-        #output { height: 160px; background: #000; border-top: 2px solid var(--bg3); padding: 15px; font-family: monospace; overflow-y: auto; color: var(--blue-lt); }
-        .error { color: var(--red); font-weight: bold; }
-        .success-msg { color: var(--green); font-weight: bold; display: block; margin-top: 5px; }
+        #output { height: 140px; background: #000; border-top: 2px solid var(--bg3); padding: 15px; font-family: monospace; overflow-y: auto; }
+        .error { color: var(--red); }
+        .success-msg { color: var(--green); font-weight: bold; }
 
-        #controls { padding: 15px; background: var(--bg2); border-top: 1px solid var(--border); display: flex; gap: 12px; }
-        .btn { padding: 10px 20px; border-radius: 4px; border: 1px solid var(--accent); background: none; color: var(--accent); cursor: pointer; font-weight: bold; font-family: monospace; transition: 0.2s; }
+        #controls { padding: 15px; background: var(--bg2); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .btn { padding: 10px 18px; border-radius: 4px; border: 1px solid var(--accent); background: none; color: var(--accent); cursor: pointer; font-weight: bold; }
         .btn:hover { background: var(--accent); color: #000; }
         #btn-next { background: var(--green); border-color: var(--green); color: #000; display: none; }
+        #btn-download { border-color: var(--blue); color: var(--blue); margin-left: auto; display: none; }
     </style>
 </head>
 <body>
@@ -65,174 +78,134 @@
 </div>
 
 <div id="main">
-    <div id="left">
+    <div id="left" class="no-select">
         <span class="badge" id="concept"></span>
-        <h1 id="title"></h1>
+        <h1 id="title" style="margin-bottom: 10px;"></h1>
         <p id="story" style="color: var(--dimlt); font-size: 14px; margin-bottom: 10px;"></p>
         
-        <div class="label">// Task</div>
+        <div style="font-size: 10px; color: var(--dim); text-transform: uppercase;">// Task</div>
         <div id="task" class="box"></div>
         
-        <div class="label">// Syntax Reference</div>
+        <div style="font-size: 10px; color: var(--dim); text-transform: uppercase;">// Reference (Type this)</div>
         <pre id="reference"></pre>
         
-        <div class="label">// Target Output</div>
-        <div id="expected" style="color: var(--green); font-family: monospace; padding: 10px; background: rgba(34,197,94,0.05); border-radius: 4px; margin-top: 5px;"></div>
+        <div id="hint-box" style="margin-top: 20px; font-size: 12px; color: var(--dimlt); font-style: italic;">
+            Note: Copy-paste is disabled. You must type the code to learn the syntax.
+        </div>
     </div>
 
     <div id="right">
-        <textarea id="code-editor" spellcheck="false" placeholder="// Initializing compiler..."></textarea>
+        <textarea id="code-editor" spellcheck="false" placeholder="// Start typing here..."></textarea>
         
         <div id="output">
-            <div style="color: var(--dim); font-size: 10px; border-bottom: 1px solid #222; padding-bottom: 4px; margin-bottom: 8px;">CONSOLE_TERMINAL</div>
-            <div id="console-text"></div>
+            <div id="console-text" style="color: var(--blue-lt);"></div>
         </div>
 
         <div id="controls">
-            <button class="btn" onclick="runCode()">RUN CODE</button>
-            <button class="btn" onclick="checkAnswer()">CHECK LOGIC</button>
+            <button class="btn" onclick="runCode()">RUN</button>
+            <button class="btn" onclick="checkAnswer()">CHECK & SAVE</button>
             <button class="btn" id="btn-next" onclick="nextLevel()">NEXT LEVEL →</button>
+            <button class="btn" id="btn-download" onclick="downloadProject()">DOWNLOAD .HTML</button>
         </div>
     </div>
 </div>
 
 <script>
+    // This array will store the student's successful code to build the final file
+    let studentProjectCode = [];
+
     const LEVELS = [
         {
-            title: "System Online",
-            concept: "console.log()",
-            story: "The first step in building a game is making sure the system can communicate. Use the log command.",
-            task: "Print the text 'System Online' to the console.",
-            reference: 'console.log("Your Text Here");',
-            expected: "System Online",
-            starter: "console.log(\"\");"
+            title: "The Foundation",
+            concept: "Variables",
+            story: "We need to pick a secret number for the player to find. We'll use Math.random.",
+            task: "Create the secret number variable.",
+            reference: "let secret = Math.floor(Math.random() * 10) + 1;",
+            expected: "let secret", // We check if they wrote the line correctly
+            starter: ""
         },
         {
-            title: "Memory Slots",
-            concept: "Variables (let)",
-            story: "Games need variables to store things like player names. Use 'let' to create a memory slot.",
-            task: "Create a variable called 'user' and set it to 'Pilot'. Then log the variable.",
-            reference: 'let name = "Value";\nconsole.log(name);',
-            expected: "Pilot",
-            starter: "let user = \"Pilot\";\n// Log your variable below:"
+            title: "Attempt Tracker",
+            concept: "Counters",
+            story: "We need to track how many guesses the player has used. Start at 0.",
+            task: "Create a variable called 'attempts' and set it to 0.",
+            reference: "let attempts = 0;",
+            expected: "let attempts = 0",
+            starter: ""
         },
         {
-            title: "Ammo Count",
-            concept: "Numbers",
-            story: "Variables can hold numbers too. Unlike text (strings), numbers don't need quotes.",
-            task: "Create a variable called 'ammo' and set it to 100. Log it.",
-            reference: 'let ammo = 100;\nconsole.log(ammo);',
-            expected: "100",
-            starter: "let ammo = 100;\n"
-        },
-        {
-            title: "Basic Math",
-            concept: "Operators",
-            story: "JavaScript can do math instantly. Use + and - to update your stats.",
-            task: "Set score to 50, then add 25 to it. Log the result.",
-            reference: "let score = 50;\nscore = score + 25;\nconsole.log(score);",
-            expected: "75",
-            starter: "let score = 50;\nscore = \nconsole.log(score);"
-        },
-        {
-            title: "Join Strings",
-            concept: "Concatenation",
-            story: "You can glue text and variables together using the + sign.",
-            task: "Log 'Score: ' followed by the score variable (100).",
-            reference: 'console.log("Text" + variable);',
-            expected: "Score: 100",
-            starter: "let score = 100;\nconsole.log(\"Score: \" + );"
-        },
-        {
-            title: "Decision Time",
-            concept: "If Statements",
-            story: "If statements check if something is true. If it is, the code inside runs.",
-            task: "If 'power' is 10, log 'Full Power'.",
-            reference: 'if (x === 10) {\n  console.log("...");\n}',
-            expected: "Full Power",
-            starter: "let power = 10;\nif (power === 10) {\n\n}"
-        },
-        {
-            title: "The Fork",
-            concept: "Else Statements",
-            story: "What if the 'if' is false? Use 'else' to provide a backup plan.",
-            task: "If money is 5, log 'Buy'. Otherwise, log 'Wait'.",
-            reference: 'if(cond){...} else {...}',
-            expected: "Wait",
-            starter: "let money = 2;\nif (money >= 5) {\n  console.log(\"Buy\");\n} else {\n\n}"
-        },
-        {
-            title: "The List",
-            concept: "Arrays",
-            story: "An array is a list of items. We use square brackets [ ] to build them.",
-            task: "Create an array called 'inv' with 'Sword' and 'Shield'. Log 'inv'.",
-            reference: 'let list = ["A", "B"];',
-            expected: "Sword,Shield",
-            starter: "let inv = [\"Sword\", \"Shield\"];\nconsole.log(inv.toString());"
-        },
-        {
-            title: "Pick an Item",
-            concept: "Array Index",
-            story: "Computers start counting at 0. So items[0] is the first item.",
-            task: "Log the first item (index 0) from the 'tools' array.",
-            reference: 'console.log(arr[0]);',
-            expected: "Hammer",
-            starter: "let tools = [\"Hammer\", \"Drill\"];\n"
-        },
-        {
-            title: "Automated Task",
+            title: "The Logic Gate",
             concept: "Functions",
-            story: "Functions are bundles of code you can run over and over. They use the 'function' keyword.",
-            task: "Create a function called 'ping' that logs 'Pong'. Call the function.",
-            reference: 'function name() { ... }\nname();',
-            expected: "Pong",
-            starter: "function ping() {\n  \n}\nping();"
+            story: "Now we need a function to check if a guess is right or wrong.",
+            task: "Define the checkGuess function shell.",
+            reference: "function checkGuess(guess) {",
+            expected: "function checkGuess",
+            starter: ""
         },
         {
-            title: "Inputs",
-            concept: "Parameters",
-            story: "Functions can take 'parameters' (inputs) to do more complex work.",
-            task: "Complete the greet function so it logs the name passed to it.",
-            reference: 'function greet(n) { console.log(n); }',
-            expected: "Alex",
-            starter: "function greet(name) {\n\n}\ngreet(\"Alex\");"
+            title: "Correct Answer",
+            concept: "If Statement",
+            story: "Inside the function, check if the guess matches the secret.",
+            task: "Type the if statement for a correct match.",
+            reference: "  if (guess === secret) {",
+            expected: "if (guess === secret)",
+            starter: "  "
         },
         {
-            title: "Calculators",
-            concept: "Return",
-            story: "Functions can 'return' a value back to you instead of just logging it.",
-            task: "Make the double function return n * 2.",
-            reference: 'return n * 2;',
-            expected: "20",
-            starter: "function double(n) {\n  \n}\nconsole.log(double(10));"
+            title: "Success Feedback",
+            concept: "Output",
+            story: "Tell the player they won!",
+            task: "Log the victory message.",
+            reference: "    console.log('You win!');",
+            expected: "You win!",
+            starter: "    "
         },
         {
-            title: "Repeaters",
-            concept: "For Loops",
-            story: "Loops run code multiple times. Perfect for processing lists.",
-            task: "Log the word 'Hey' 3 times using a loop.",
-            reference: 'for(let i=0; i<3; i++) { ... }',
-            expected: "Hey\nHey\nHey",
-            starter: "for(let i = 0; i < 3; i++) {\n\n}"
+            title: "Closing the Block",
+            concept: "Syntax",
+            story: "Every { needs a }.",
+            task: "Close the if statement block.",
+            reference: "  }",
+            expected: "}",
+            starter: "  "
         },
         {
-            title: "Randomness",
-            concept: "Math.random()",
-            story: "Games need chance. Math.random() gives a decimal between 0 and 1.",
-            task: "Multiply Math.random() by 10 and log it (we will fix the decimal later).",
-            reference: 'console.log(Math.random() * 10);',
-            expected: "RANDOM_NUMBER", 
-            starter: "console.log(Math.random() * 10);"
+            title: "Higher or Lower?",
+            concept: "Else If",
+            story: "If they didn't get it, check if the guess was too high.",
+            task: "Type the else if condition.",
+            reference: "  else if (guess > secret) {",
+            expected: "else if (guess > secret)",
+            starter: "  "
         },
         {
-            title: "Clean Numbers",
-            concept: "Math.floor()",
-            story: "Math.floor() rounds a number DOWN to the nearest whole number.",
-            task: "Log the floor of 9.99.",
-            reference: 'console.log(Math.floor(9.99));',
-            expected: "9",
-            starter: "console.log(Math.floor(9.99));"
+            title: "Too High",
+            concept: "Output",
+            story: "Give the player a hint.",
+            task: "Log the 'Too High' message.",
+            reference: "    console.log('Too high!');",
+            expected: "Too high!",
+            starter: "    "
+        },
+        {
+            title: "The Wrap Up",
+            concept: "Function Closing",
+            story: "Close the function entirely.",
+            task: "Type the final two closing braces.",
+            reference: "  }\n}",
+            expected: "}",
+            starter: ""
+        },
+        {
+            title: "The Test Run",
+            concept: "Execution",
+            story: "Finally, call your function with a test guess.",
+            task: "Call checkGuess with the number 5.",
+            reference: "checkGuess(5);",
+            expected: "checkGuess(5)",
+            starter: ""
         }
+        // Add more levels here...
     ];
 
     let currentLvl = 0;
@@ -241,75 +214,90 @@
         const code = document.getElementById('code-editor').value;
         const consoleOutput = document.getElementById('console-text');
         consoleOutput.innerHTML = "";
-
+        
         const originalLog = console.log;
         console.log = function(...args) {
-            const msg = args.join(" ");
-            consoleOutput.innerText += msg + "\n";
+            consoleOutput.innerText += args.join(" ") + "\n";
         };
 
         try {
-            eval(code);
+            // We include previous saved code so variables exist in scope
+            const context = studentProjectCode.join("\n") + "\n" + code;
+            eval(context);
         } catch (err) {
-            consoleOutput.innerHTML = `<span class="error">Runtime Error: ${err.message}</span>`;
+            consoleOutput.innerHTML = `<span class="error">Syntax Error: ${err.message}</span>`;
         }
         console.log = originalLog;
     }
 
     function checkAnswer() {
-        runCode();
-        const output = document.getElementById('console-text').innerText.trim();
-        const goal = LEVELS[currentLvl].expected;
-        const btnNext = document.getElementById('btn-next');
+        const code = document.getElementById('code-editor').value;
+        const expected = LEVELS[currentLvl].expected;
+        const consoleOutput = document.getElementById('console-text');
 
-        // Logic for random number level
-        if (goal === "RANDOM_NUMBER") {
-            if (!isNaN(parseFloat(output)) && output !== "") {
-                pass();
-            } else { fail(); }
-            return;
-        }
-
-        if (output === goal.trim()) { pass(); } 
-        else { fail(goal); }
-
-        function pass() {
-            document.getElementById('console-text').innerHTML += `<span class="success-msg">✓ LOGIC VERIFIED. PHASING TO NEXT LEVEL.</span>`;
-            btnNext.style.display = "block";
+        if (code.includes(expected)) {
+            consoleOutput.innerHTML = `<span class="success-msg">✓ LINE VERIFIED. Code saved to project memory.</span>`;
+            document.getElementById('btn-next').style.display = "block";
             document.getElementById(`dot-${currentLvl}`).classList.add('done');
-        }
+            
+            // Save this specific chunk of code
+            studentProjectCode[currentLvl] = code;
 
-        function fail(g) {
-            document.getElementById('console-text').innerHTML += `<span class="error">× LOGIC ERROR. Expected output: ${g || 'a number'}</span>`;
+            if (currentLvl === LEVELS.length - 1) {
+                document.getElementById('btn-download').style.display = "block";
+            }
+        } else {
+            consoleOutput.innerHTML = `<span class="error">× LOGIC MISMATCH. Please type the code exactly as shown in the reference.</span>`;
         }
     }
 
-    function loadLevel(index) {
-        const data = LEVELS[index];
+    function loadLevel(idx) {
+        const data = LEVELS[idx];
         document.getElementById('title').innerText = data.title;
-        document.getElementById('concept').innerText = `CONCEPT: ${data.concept}`;
+        document.getElementById('concept').innerText = `MODULE: ${data.concept}`;
         document.getElementById('story').innerText = data.story;
         document.getElementById('task').innerText = data.task;
         document.getElementById('reference').innerText = data.reference;
-        document.getElementById('expected').innerText = `Goal: ${data.expected === "RANDOM_NUMBER" ? "Any number" : data.expected}`;
         document.getElementById('code-editor').value = data.starter;
-        document.getElementById('console-text').innerText = "";
+        document.getElementById('console-text').innerText = "Awaiting input...";
         document.getElementById('btn-next').style.display = "none";
-        document.getElementById('lvl-tag').innerText = `LVL ${index + 1 < 10 ? '0' + (index + 1) : index + 1}`;
+        document.getElementById('lvl-tag').innerText = `LVL ${idx + 1}`;
         
         document.querySelectorAll('.dot').forEach((d, i) => {
             d.classList.remove('active');
-            if (i === index) d.classList.add('active');
+            if (i === idx) d.classList.add('active');
         });
     }
 
     function nextLevel() {
         currentLvl++;
-        if (currentLvl < LEVELS.length) { loadLevel(currentLvl); } 
-        else { alert("All modules loaded. Student is ready for the Master Build!"); }
+        if (currentLvl < LEVELS.length) {
+            loadLevel(currentLvl);
+        }
     }
 
-    // Init UI
+    function downloadProject() {
+        const finalCode = `
+<!DOCTYPE html>
+<html>
+<head><title>My JS Game</title></head>
+<body>
+    <h1>Check the Console (F12) to play!</h1>
+    <script>
+    // Built with JS://BUILD
+    ${studentProjectCode.join("\n")}
+    <\/script>
+</body>
+</html>`;
+        
+        const blob = new Blob([finalCode], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'my_javascript_game.html';
+        a.click();
+    }
+
+    // Init Dots
     const dotContainer = document.getElementById('dots');
     LEVELS.forEach((_, i) => {
         const d = document.createElement('div');
@@ -320,6 +308,5 @@
 
     loadLevel(0);
 </script>
-
 </body>
 </html>
