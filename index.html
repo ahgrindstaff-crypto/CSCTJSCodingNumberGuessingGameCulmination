@@ -282,27 +282,52 @@
     }
 
     function downloadProject() {
-        const projectBody = studentProjectCode.join("\n");
-        const template = `<!DOCTYPE html>
+    const projectBody = studentProjectCode.join("\n");
+    const template = `<!DOCTYPE html>
 <html>
-<head><title>JS://BUILD Final Project</title></head>
-<body style="background:#000; color:#0f0; font-family:monospace; padding:50px;">
-    <h1>GAME MODULE LOADED</h1>
-    <p>Check the Browser Console (F12) to see your code output!</p>
+<head>
+    <title>JS://BUILD Final Project</title>
+    <style>
+        body { background: #08080f; color: #ddd8f0; font-family: 'Courier New', monospace; padding: 40px; }
+        #display { 
+            background: #000; border: 1px solid #ff8c00; padding: 20px; 
+            border-radius: 8px; min-height: 200px; white-space: pre-wrap;
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); color: #60a5fa;
+        }
+        h1 { color: #ff8c00; font-size: 18px; letter-spacing: 2px; }
+        .system-note { color: #5a5a80; font-size: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>> GAME_MODULE_LOADED</h1>
+    <div id="display">Initializing...</div>
+    <p class="system-note">This code was built line-by-line in JS://BUILD.</p>
+
     <script>
-    /* YOUR CODE START */
-    ${projectBody}
-    /* YOUR CODE END */
+        // Virtual Terminal Redirect
+        const display = document.getElementById('display');
+        display.innerText = "";
+        console.log = function(...args) {
+            display.innerText += args.join(" ") + "\\n";
+        };
+
+        /* --- STUDENT CODE START --- */
+        try {
+            ${projectBody}
+        } catch (err) {
+            display.innerText = "RUNTIME ERROR: " + err.message;
+        }
+        /* --- STUDENT CODE END --- */
     <\/script>
 </body>
 </html>`;
-        
-        const blob = new Blob([template], { type: 'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'javascript_project.html';
-        a.click();
-    }
+    
+    const blob = new Blob([template], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'my_javascript_game.html';
+    a.click();
+}
 
     // Generate Progress Dots
     const dotContainer = document.getElementById('dots');
