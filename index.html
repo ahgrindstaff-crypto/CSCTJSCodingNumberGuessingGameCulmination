@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JS://BUILD — 25-Level JavaScript Challenge</title>
 <style>
+/* ── THEME & VARIABLES ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#08080f;--bg2:#10101c;--bg3:#181828;--bg4:#1e1e30;
@@ -13,1027 +14,209 @@
   --green:#22c55e;--green-dk:#052e16;--green-lt:#bbf7d0;
   --red:#ef4444;--red-dk:#2a0000;--red-lt:#fecaca;
   --blue:#60a5fa;--blue-dk:#0c1a3a;--blue-lt:#dbeafe;
-  --purple:#a78bfa;--teal:#2dd4bf;
   --border:rgba(255,140,0,0.15);--border2:rgba(255,140,0,0.32);
 }
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* ── TOP BAR ── */
-#topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;
-  display:flex;align-items:center;gap:16px;height:54px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
-#logo{font-family:'Courier New',monospace;font-size:15px;color:var(--accent);font-weight:bold;letter-spacing:2px;white-space:nowrap}
-#phase-badge{font-size:11px;color:var(--dimlt);background:var(--bg3);padding:3px 10px;border-radius:3px;
-  border:1px solid var(--border);letter-spacing:1px;white-space:nowrap}
-#progress-wrap{flex:1;min-width:160px}
-#progress-label{font-size:10px;color:var(--dim);letter-spacing:1px;margin-bottom:4px}
-#dots{display:flex;gap:3px;flex-wrap:wrap}
-.dot{width:18px;height:7px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);
-  transition:background .3s;cursor:default}
-.dot.done{background:var(--accent)}
-.dot.active{background:var(--accent-d);border-color:var(--accent)}
-#level-counter{font-size:13px;color:var(--accent);font-weight:bold;letter-spacing:1px;white-space:nowrap}
-
 /* ── LAYOUT ── */
-#wrap{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 54px);gap:0}
-@media(max-width:820px){#wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+#topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;
+  display:flex;align-items:center;gap:16px;height:54px;position:sticky;top:0;z-index:100}
+#logo{font-family:'Courier New',monospace;font-size:15px;color:var(--accent);font-weight:bold;letter-spacing:2px}
+#progress-wrap{flex:1; max-width: 400px;}
+#dots{display:flex;gap:4px;}
+.dot{width:12px;height:12px;border-radius:2px;background:var(--bg3);border:1px solid var(--border);transition:0.3s}
+.dot.done{background:var(--accent)}
+.dot.active{background:var(--accent-d);border-color:var(--accent);box-shadow:0 0 10px var(--accent-d)}
 
-/* ── LEFT PANEL (Instructions) ── */
-#left{background:var(--bg2);border-right:1px solid var(--border);padding:0;
-  display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 54px)}
-#level-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);background:var(--bg3)}
-#level-num{font-size:10px;color:var(--accent);letter-spacing:3px;margin-bottom:5px}
-#level-title{font-size:20px;font-weight:bold;color:var(--blue);margin-bottom:4px}
-#concept-badge{display:inline-block;background:var(--accent-dk);color:var(--accent-lt);font-size:11px;
-  padding:3px 9px;border-radius:3px;font-family:'Courier New',monospace;letter-spacing:1px}
-#left-body{padding:18px 20px;flex:1;overflow-y:auto}
-.section-lbl{font-size:9px;color:var(--dim);letter-spacing:2px;margin-bottom:7px;margin-top:16px}
-.section-lbl:first-child{margin-top:0}
-#story-text{font-size:13px;line-height:1.8;color:var(--dimlt)}
-#instruction-box{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
-  padding:14px;font-size:13px;line-height:1.8;color:var(--text)}
-#template-box{background:#0a0a18;border:1px solid rgba(96,165,250,.2);border-radius:6px;
-  padding:13px 14px;font-family:'Courier New',monospace;font-size:13px;line-height:1.9;
-  color:#9ec8f8;white-space:pre;overflow-x:auto;margin-top:4px}
-#expected-box{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.3);
-  border-radius:5px;padding:11px 14px;font-family:'Courier New',monospace;font-size:13px;
-  color:var(--green);line-height:1.8;white-space:pre-wrap}
-#hint-box{background:rgba(255,140,0,.07);border:1px solid rgba(255,140,0,.28);
-  border-radius:5px;padding:11px 14px;font-size:13px;color:var(--accent-lt);
-  line-height:1.75;display:none;margin-top:8px}
-#hint-box.show{display:block}
-#explain-box{background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.22);
-  border-radius:5px;padding:11px 14px;font-size:12px;color:var(--blue);
-  line-height:1.75;margin-top:8px}
+#wrap{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 54px)}
 
-/* ── RIGHT PANEL (Editor) ── */
-#right{display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-#editor-header{background:var(--bg3);border-bottom:1px solid var(--border);
-  padding:10px 16px;display:flex;align-items:center;gap:10px}
-#file-name{font-family:'Courier New',monospace;font-size:13px;color:var(--dimlt)}
-.dot-r{width:10px;height:10px;border-radius:50%;background:var(--red);margin-left:auto}
-.dot-y{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.dot-g{width:10px;height:10px;border-radius:50%;background:var(--green)}
-#editor-area{flex:1;position:relative;min-height:200px}
-#code-editor{width:100%;height:100%;min-height:220px;background:#0b0b18;color:#e0e8ff;
-  font-family:'Courier New','Lucida Console',monospace;font-size:14px;line-height:1.85;
-  border:none;outline:none;padding:16px 16px 16px 52px;resize:none;
-  caret-color:var(--accent);tab-size:4}
-#line-nums{position:absolute;left:0;top:0;width:44px;padding:16px 0;
-  font-family:'Courier New',monospace;font-size:14px;line-height:1.85;
-  color:var(--dim);text-align:right;padding-right:10px;pointer-events:none;
-  overflow:hidden;background:#080812;border-right:1px solid var(--border);user-select:none}
-#toolbar{background:var(--bg3);border-top:1px solid var(--border);
-  padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tbtn{font-family:'Courier New',monospace;font-size:12px;padding:8px 16px;
-  border-radius:4px;cursor:pointer;letter-spacing:1px;transition:.2s;border:1px solid transparent}
-.tbtn-run{background:transparent;border-color:var(--green);color:var(--green)}
-.tbtn-run:hover{background:var(--green);color:#000}
-.tbtn-check{background:transparent;border-color:var(--accent);color:var(--accent)}
-.tbtn-check:hover{background:var(--accent);color:#000}
-.tbtn-hint{background:transparent;border-color:var(--dim);color:var(--dimlt)}
-.tbtn-hint:hover{border-color:var(--accent-lt);color:var(--accent-lt)}
-.tbtn-clear{background:transparent;border-color:var(--dim);color:var(--dimlt)}
-.tbtn-clear:hover{border-color:var(--red);color:var(--red)}
-.tbtn-next{background:var(--accent-dk);border-color:var(--accent);color:var(--accent);display:none}
-.tbtn-next:hover{background:var(--accent);color:#000}
-#wrong-count{font-size:11px;color:var(--dim);margin-left:auto;letter-spacing:1px}
+/* ── PANELS ── */
+#left{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+#level-header{padding:20px;background:var(--bg3);border-bottom:1px solid var(--border)}
+#left-body{padding:20px;flex:1}
+.section-lbl{font-size:10px;color:var(--dim);letter-spacing:2px;margin:15px 0 5px;text-transform:uppercase}
 
-/* ── OUTPUT ── */
-#output-panel{background:#06060f;border-top:1px solid var(--border);
-  min-height:120px;max-height:220px;overflow-y:auto;display:flex;flex-direction:column}
-#output-header{background:var(--bg3);padding:6px 14px;font-size:10px;color:var(--dim);
-  letter-spacing:2px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-shrink:0}
-#output-status{margin-left:auto;font-size:11px;font-weight:bold}
-#output-status.ok{color:var(--green)}
-#output-status.err{color:var(--red)}
-#output-text{padding:12px 14px;font-family:'Courier New',monospace;font-size:13px;
-  line-height:1.8;flex:1;white-space:pre-wrap;color:#9ec8f8;word-break:break-word}
-.out-line-ok{color:#9ec8f8}
-.out-line-err{color:var(--red)}
+#right{display:flex;flex-direction:column;background:#05050a}
+#editor-area{flex:1;position:relative;display:flex;flex-direction:column}
+#code-editor{flex:1;background:#0b0b18;color:#e0e8ff;font-family:'Courier New',monospace;font-size:15px;
+  padding:20px;border:none;outline:none;resize:none;line-height:1.6}
 
-/* ── FEEDBACK BANNER ── */
-#feedback{padding:10px 14px;font-size:13px;font-weight:bold;
-  display:none;border-top:1px solid var(--border);letter-spacing:.5px}
-#feedback.pass{display:block;background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3)}
-#feedback.fail{display:block;background:rgba(239,68,68,.09);color:var(--red);border-color:rgba(239,68,68,.3)}
+/* ── UI ELEMENTS ── */
+#instruction-box{background:var(--bg3);padding:15px;border-radius:6px;font-size:14px;border:1px solid var(--border)}
+#template-box{background:#000;padding:12px;color:var(--blue);font-family:monospace;margin-top:5px;border-radius:4px;white-space:pre}
+#output-panel{background:#000;height:180px;border-top:2px solid var(--bg3);overflow-y:auto;padding:15px;font-family:monospace}
+#feedback{padding:10px 20px;font-weight:bold;display:none}
+.pass{display:block !important;background:var(--green-dk);color:var(--green-lt)}
+.fail{display:block !important;background:var(--red-dk);color:var(--red-lt)}
 
-/* ── LEVEL 25 GAME PREVIEW ── */
-#game-preview-wrap{display:none;flex-direction:column;flex:1;border-top:1px solid var(--border)}
-#preview-header{background:var(--bg3);padding:8px 16px;font-size:11px;
-  color:var(--accent);letter-spacing:2px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px}
-#game-iframe{width:100%;flex:1;border:none;min-height:380px;background:#fff}
-#download-btn{font-family:'Courier New',monospace;background:var(--green-dk);
-  border:1px solid var(--green);color:var(--green);font-size:13px;padding:10px 22px;
-  border-radius:4px;cursor:pointer;letter-spacing:2px;transition:.2s;margin-left:auto}
-#download-btn:hover{background:var(--green);color:#000}
-
-/* ── COMPLETION SCREEN ── */
-#completion{display:none;position:fixed;inset:0;background:rgba(8,8,15,.96);
-  z-index:999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-.comp-title{font-size:38px;color:var(--accent);font-weight:bold;letter-spacing:3px;margin-bottom:10px}
-.comp-sub{font-size:16px;color:var(--dimlt);margin-bottom:28px;line-height:1.7}
-.comp-badge{background:rgba(255,140,0,.1);border:1px solid var(--accent-d);border-radius:8px;
-  padding:16px 32px;font-size:14px;color:var(--accent-lt);letter-spacing:1px;margin-bottom:28px;line-height:1.8}
-.comp-btn{font-family:'Courier New',monospace;font-size:14px;padding:14px 28px;
-  border-radius:4px;cursor:pointer;letter-spacing:2px;transition:.2s;border:1px solid;margin:6px}
-.cbtn-play{background:var(--accent-dk);border-color:var(--accent);color:var(--accent)}
-.cbtn-play:hover{background:var(--accent);color:#000}
-.cbtn-dl{background:var(--green-dk);border-color:var(--green);color:var(--green)}
-.cbtn-dl:hover{background:var(--green);color:#000}
+.tbtn{padding:10px 20px;cursor:pointer;border:1px solid var(--accent);background:none;color:var(--accent);font-weight:bold;border-radius:4px}
+.tbtn:hover{background:var(--accent);color:#000}
+#next-btn{background:var(--green);color:#000;border-color:var(--green);display:none}
 </style>
 </head>
 <body>
 
-<!-- ── TOP BAR ── -->
 <div id="topbar">
   <div id="logo">JS://BUILD</div>
-  <div id="phase-badge">PHASE 1</div>
   <div id="progress-wrap">
-    <div id="progress-label">PROGRESS — LEVEL <span id="lnum">1</span> / 25</div>
     <div id="dots"></div>
   </div>
-  <div id="level-counter">LV 01</div>
+  <div id="level-display" style="color:var(--accent); font-weight:bold">LEVEL 01</div>
 </div>
 
-<!-- ── MAIN LAYOUT ── -->
 <div id="wrap">
-
-  <!-- LEFT: Instructions -->
   <div id="left">
     <div id="level-header">
-      <div id="level-num">LEVEL 01</div>
-      <div id="level-title">Hello, World!</div>
-      <div id="concept-badge">console.log()</div>
+      <div id="level-title" style="font-size:22px; color:var(--blue)">Hello, World!</div>
+      <div id="concept-badge" style="color:var(--dimlt); font-size:12px">console.log()</div>
     </div>
     <div id="left-body">
-      <div class="section-lbl">// WHAT'S HAPPENING</div>
-      <div id="story-text"></div>
-
-      <div class="section-lbl">// YOUR TASK</div>
+      <div class="section-lbl">// MISSION</div>
+      <div id="story-text" style="font-size:14px; line-height:1.6"></div>
+      <div class="section-lbl">// INSTRUCTIONS</div>
       <div id="instruction-box"></div>
-
-      <div class="section-lbl">// CODE TO TYPE</div>
+      <div class="section-lbl">// REFERENCE CODE</div>
       <div id="template-box"></div>
-
       <div class="section-lbl">// EXPECTED OUTPUT</div>
-      <div id="expected-box"></div>
-
-      <div id="hint-box"></div>
-
-      <div class="section-lbl" style="margin-top:16px">// WHAT THIS DOES</div>
-      <div id="explain-box"></div>
+      <div id="expected-box" style="color:var(--green)"></div>
     </div>
   </div>
 
-  <!-- RIGHT: Editor + Output -->
   <div id="right">
-    <div id="editor-header">
-      <div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div>
-      <div id="file-name">script.js</div>
-    </div>
     <div id="editor-area">
-      <div id="line-nums">1</div>
-      <textarea id="code-editor" spellcheck="false" autocorrect="off" autocapitalize="off"
-        placeholder="// Type your code here..."></textarea>
-    </div>
-    <div id="toolbar">
-      <button class="tbtn tbtn-run" onclick="runCode()">▶  RUN</button>
-      <button class="tbtn tbtn-check" onclick="checkCode()">✓  CHECK</button>
-      <button class="tbtn tbtn-hint" onclick="showHint()">?  HINT</button>
-      <button class="tbtn tbtn-clear" onclick="clearEditor()">✕  CLEAR</button>
-      <button class="tbtn tbtn-next" id="next-btn" onclick="nextLevel()">NEXT LEVEL →</button>
-      <div id="wrong-count"></div>
-    </div>
-    <div id="output-panel">
-      <div id="output-header">
-        // OUTPUT
-        <span id="output-status"></span>
-      </div>
-      <div id="output-text">// Press RUN to see your output here...</div>
+      <textarea id="code-editor" spellcheck="false" placeholder="// Type code here..."></textarea>
     </div>
     <div id="feedback"></div>
-
-    <!-- Level 25 game preview -->
-    <div id="game-preview-wrap">
-      <div id="preview-header">
-        🎮 YOUR COMPLETE GAME — RUNNING LIVE
-        <button id="download-btn" onclick="downloadGame()">⬇  DOWNLOAD MY GAME</button>
-      </div>
-      <iframe id="game-iframe" sandbox="allow-scripts"></iframe>
+    <div id="toolbar" style="padding:15px; background:var(--bg2); display:flex; gap:10px">
+      <button class="tbtn" onclick="runCode()">▶ RUN CODE</button>
+      <button class="tbtn" onclick="checkCode()">✓ CHECK ANSWER</button>
+      <button class="tbtn" id="next-btn" onclick="nextLevel()">NEXT LEVEL →</button>
+    </div>
+    <div id="output-panel">
+      <div style="color:var(--dim); font-size:10px; margin-bottom:5px">// SYSTEM OUTPUT</div>
+      <div id="output-text" style="color:var(--blue-lt); white-space:pre-wrap">Press RUN to see output...</div>
     </div>
   </div>
 </div>
 
-<!-- ── COMPLETION SCREEN ── -->
-<div id="completion">
-  <div class="comp-title">🏆 CHALLENGE COMPLETE!</div>
-  <div class="comp-sub">You built a complete JavaScript game from scratch.<br>25 levels. Every line of code. All you.</div>
-  <div class="comp-badge">
-    ✓ Variables &amp; Output<br>
-    ✓ If / Else Decisions<br>
-    ✓ Loops &amp; Arrays<br>
-    ✓ Functions with Parameters &amp; Return Values<br>
-    ✓ Math.random() &amp; parseInt()<br>
-    ✓ A Complete, Playable JavaScript Game
-  </div>
-  <div>
-    <button class="comp-btn cbtn-play" onclick="document.getElementById('completion').style.display='none'">← PLAY WITH YOUR GAME</button>
-    <button class="comp-btn cbtn-dl" onclick="downloadGame()">⬇ DOWNLOAD MY GAME FILE</button>
-  </div>
-</div>
-
 <script>
-/* ═══════════════════════════════════════════════
-   THE COMPLETE GAME (used at Level 25 + download)
-═══════════════════════════════════════════════ */
-const COMPLETE_GAME_HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Number Guessing Game — I Built This!</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-  color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-.game{background:rgba(255,255,255,.1);border-radius:20px;padding:36px 32px;text-align:center;
-  max-width:420px;width:100%;border:1px solid rgba(255,255,255,.18)}
-h1{color:#ffd700;margin-bottom:6px;font-size:26px}
-.sub{color:#a0a0c0;margin-bottom:22px;font-size:14px;line-height:1.6}
-input[type=number]{padding:12px;font-size:22px;width:110px;text-align:center;
-  border:2px solid #7c3aed;border-radius:10px;background:rgba(0,0,0,.3);
-  color:#fff;outline:none;margin-bottom:12px}
-input[type=number]:focus{border-color:#a78bfa}
-.btn{display:block;width:100%;padding:14px;font-size:16px;font-weight:bold;
-  border:none;border-radius:10px;cursor:pointer;margin-top:10px;transition:transform .1s}
-.btn:active{transform:scale(.97)}
-.btn-guess{background:#7c3aed;color:#fff}
-.btn-guess:hover{background:#6d28d9}
-.btn-again{background:#059669;color:#fff;display:none}
-.btn-again:hover{background:#047857}
-#message{font-size:17px;min-height:52px;margin:16px 0;padding:12px;
-  border-radius:8px;background:rgba(0,0,0,.2);line-height:1.5}
-#attempts{color:#a78bfa;margin:5px 0;font-size:14px}
-#score{font-size:22px;color:#ffd700;font-weight:bold;min-height:30px;margin:8px 0}
-.credit{font-size:11px;color:#5a5a80;margin-top:18px}
-</style>
-</head>
-<body>
-<div class="game">
-  <h1>&#127919; Number Guessing Game</h1>
-  <p class="sub">I am thinking of a number from 1 to 10.<br>You have 5 tries to guess it!</p>
-  <input type="number" id="guessInput" min="1" max="10" placeholder="1-10">
-  <button class="btn btn-guess" onclick="makeGuess()">Make My Guess!</button>
-  <div id="message">Type a number above and click the button!</div>
-  <div id="attempts">Attempts: 0 / 5</div>
-  <div id="score"></div>
-  <button class="btn btn-again" id="playAgainBtn" onclick="playAgain()">&#128260; Play Again</button>
-  <p class="credit">Built with JavaScript by a Grindstaff MS Coder!</p>
-</div>
-<script>
-// ================================
-// NUMBER GUESSING GAME
-// ================================
-
-// --- VARIABLES ---
-var secretNumber = Math.floor(Math.random() * 10) + 1;
-var attempts = 0;
-var maxAttempts = 5;
-
-// --- FUNCTION 1: checkGuess ---
-function checkGuess(guess, secret) {
-    if (guess === secret) {
-        return "Correct! You got it!";
-    } else if (guess > secret) {
-        return "Too high! Try a lower number.";
-    } else {
-        return "Too low! Try a higher number.";
-    }
-}
-
-// --- FUNCTION 2: getScore ---
-function getScore(attemptsUsed) {
-    if (attemptsUsed === 1) return 100;
-    if (attemptsUsed === 2) return 80;
-    if (attemptsUsed === 3) return 60;
-    if (attemptsUsed === 4) return 40;
-    return 20;
-}
-
-// --- FUNCTION 3: makeGuess ---
-function makeGuess() {
-    var inputValue = document.getElementById("guessInput").value;
-    var guess = parseInt(inputValue);
-    if (isNaN(guess) || guess < 1 || guess > 10) {
-        document.getElementById("message").textContent = "Please enter a number between 1 and 10!";
-        return;
-    }
-    attempts = attempts + 1;
-    var result = checkGuess(guess, secretNumber);
-    document.getElementById("message").textContent = result;
-    document.getElementById("attempts").textContent = "Attempts: " + attempts + " / " + maxAttempts;
-    if (guess === secretNumber) {
-        var score = getScore(attempts);
-        document.getElementById("score").textContent = "Score: " + score + " points!";
-        document.getElementById("playAgainBtn").style.display = "block";
-    } else if (attempts >= maxAttempts) {
-        document.getElementById("message").textContent = "Out of guesses! The number was " + secretNumber + ".";
-        document.getElementById("score").textContent = "Score: 20 points.";
-        document.getElementById("playAgainBtn").style.display = "block";
-    }
-}
-
-// --- FUNCTION 4: playAgain ---
-function playAgain() {
-    secretNumber = Math.floor(Math.random() * 10) + 1;
-    attempts = 0;
-    document.getElementById("message").textContent = "Type a number above and click the button!";
-    document.getElementById("attempts").textContent = "Attempts: 0 / 5";
-    document.getElementById("score").textContent = "";
-    document.getElementById("playAgainBtn").style.display = "none";
-    document.getElementById("guessInput").value = "";
-}
-<\/script>
-</body>
-</html>`;
-
-/* ═══════════════════════════════════════════════
-   25 LEVELS
-═══════════════════════════════════════════════ */
+// ── DATA: THE LEVELS ──
 const LEVELS = [
-
-/* ── LEVEL 1 ── */
-{ level:1, phase:"Phase 1: Output & Variables", title:"Hello, World!",
-  concept:"console.log()",
-  story:"Every programmer on the planet starts with these same words. This is your very first line of real JavaScript code. Welcome to coding!",
-  task:"Type the code shown below exactly as you see it — every character matters. Capital letters, quotation marks, and parentheses must all be correct.",
-  template:`console.log("Hello, World!");`,
-  starter:`// Type your code below:\n`,
-  expected:`Hello, World!`,
-  explain:`console.log() prints text to the output. Whatever you put inside the parentheses — in quotes — appears on the screen. This is how JavaScript talks to you while your program runs.`,
-  hint:`Make sure you have: console.log("Hello, World!") — the capital W, the comma, and the quotation marks are all required.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 2 ── */
-{ level:2, phase:"Phase 1: Output & Variables", title:"Your First Variable",
-  concept:"let",
-  story:"A variable is like a labeled box. You put a value inside, give the box a name, and then use that name to get the value back whenever you need it.",
-  task:"Type both lines exactly. The first line creates a variable called playerName and stores the text Alex inside it. The second line prints it.",
-  template:`let playerName = "Alex";\nconsole.log(playerName);`,
-  starter:`// Create a variable and print it:\n`,
-  expected:`Alex`,
-  explain:`let creates a new variable. The = sign stores a value inside it. Notice: when you print a variable, you do NOT use quotes around its name — you just write the name itself.`,
-  hint:`Line 1: let playerName = "Alex";  — notice Alex is in quotes because it's text.\nLine 2: console.log(playerName);  — no quotes around playerName here!`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 3 ── */
-{ level:3, phase:"Phase 1: Output & Variables", title:"Number Variables",
-  concept:"let, =, +",
-  story:"Variables can hold numbers too — not just text. And you can change a variable's value by setting it to something new using the = sign.",
-  task:"Type all three lines. Watch how the score variable starts at 0, then gets updated to 10.",
-  template:`let score = 0;\nscore = score + 10;\nconsole.log(score);`,
-  starter:`// Number variable:\n`,
-  expected:`10`,
-  explain:`score = score + 10 means: take the current value of score (0), add 10 to it, and store the result back into score. So score goes from 0 to 10. This is how you update a number variable.`,
-  hint:`Three separate lines:\n1. let score = 0;\n2. score = score + 10;\n3. console.log(score);\nMake sure you have a semicolon at the end of each line.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 4 ── */
-{ level:4, phase:"Phase 1: Output & Variables", title:"Math with Variables",
-  concept:"let, -, variables",
-  story:"JavaScript can do math. You can use +, -, *, and / to do addition, subtraction, multiplication, and division with variables and numbers.",
-  task:"Type all four lines. You are creating two variables, doing subtraction, and printing the answer.",
-  template:`let a = 10;\nlet b = 3;\nlet answer = a - b;\nconsole.log(answer);`,
-  starter:`// Math with variables:\n`,
-  expected:`7`,
-  explain:`a - b means 10 minus 3, which equals 7. We store that result in a new variable called answer, then print it. You can name variables anything — a, b, answer, score, secretNumber — whatever makes sense.`,
-  hint:`Four lines:\n1. let a = 10;\n2. let b = 3;\n3. let answer = a - b;\n4. console.log(answer);\nThe output should be the number 7.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 5 ── */
-{ level:5, phase:"Phase 1: Output & Variables", title:"Joining Text Together",
-  concept:"String concatenation (+)",
-  story:"The + sign does two different jobs in JavaScript: it adds numbers together, AND it joins pieces of text together. Joining text is called concatenation.",
-  task:"Type both lines. Notice how + is used to glue text pieces and a variable together into one message.",
-  template:`let player = "Alex";\nconsole.log("Welcome, " + player + "!");`,
-  starter:`// Join text and a variable:\n`,
-  expected:`Welcome, Alex!`,
-  explain:`"Welcome, " + player + "!" joins three things: the text "Welcome, ", the value stored in player (which is "Alex"), and the text "!". The result is the single string: Welcome, Alex!`,
-  hint:`Two lines:\n1. let player = "Alex";\n2. console.log("Welcome, " + player + "!");\nEach piece is connected with + signs. Spaces inside the quotes matter!`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 6 ── */
-{ level:6, phase:"Phase 2: Decisions", title:"Your First If Statement",
-  concept:"if statement",
-  story:"Programs need to make decisions. An if statement checks whether something is true, and only runs its code if it is. This is how programs think!",
-  task:"Type this code. The if statement checks whether 8 is greater than 5. Since it is true, the message will print.",
-  template:`let number = 8;\n\nif (number > 5) {\n    console.log("The number is greater than 5!");\n}`,
-  starter:`// If statement:\n`,
-  expected:`The number is greater than 5!`,
-  explain:`if (number > 5) — the part in parentheses is the condition. If it is true, the code inside the curly braces { } runs. If it is false, the code is skipped. Try it: what if number was 3 instead of 8?`,
-  hint:`Three parts to type:\n1. let number = 8;\n2. if (number > 5) {   — with the opening curly brace\n3.     console.log("The number is greater than 5!");   — indented with 4 spaces\n4. }   — closing curly brace`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 7 ── */
-{ level:7, phase:"Phase 2: Decisions", title:"If and Else",
-  concept:"if / else",
-  story:"An if/else gives your program TWO paths: one for when the condition is true, and one for when it is false. The program always takes exactly one of the two paths.",
-  task:"Type this code. The guess is 3, the answer is 7. They are not equal, so the else branch runs.",
-  template:`let guess = 3;\nlet answer = 7;\n\nif (guess === answer) {\n    console.log("Correct!");\n} else {\n    console.log("Wrong! Try again.");\n}`,
-  starter:`// If / else:\n`,
-  expected:`Wrong! Try again.`,
-  explain:`=== means "is exactly equal to." It is different from = which stores a value. Since 3 is NOT equal to 7, the if condition is false, so the else branch runs instead and prints "Wrong! Try again."`,
-  hint:`Notice: the comparison uses THREE equals signs (===), not one.\nif (guess === answer) {    <- true path\n} else {                    <- false path\n}`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 8 ── */
-{ level:8, phase:"Phase 2: Decisions", title:"Three Choices: If, Else If, Else",
-  concept:"if / else if / else",
-  story:"Sometimes you need more than two paths. else if adds a third (or fourth, or fifth) option. The program checks each condition in order and takes the FIRST one that is true.",
-  task:"Type this code. The guess is 10, the secret is 7. Since 10 is greater than 7, the 'Too high!' message prints.",
-  template:`let guess = 10;\nlet secret = 7;\n\nif (guess === secret) {\n    console.log("Correct!");\n} else if (guess > secret) {\n    console.log("Too high!");\n} else {\n    console.log("Too low!");\n}`,
-  starter:`// If / else if / else:\n`,
-  expected:`Too high!`,
-  explain:`The program checks conditions in order:\n1. Is guess === secret? (10 === 7?) → No\n2. Is guess > secret? (10 > 7?) → YES! → Print "Too high!" and stop.\nThe else at the end only runs if ALL other conditions were false.`,
-  hint:`Three blocks connected:\nif (...) { ... }\nelse if (...) { ... }\nelse { ... }\nMake sure each opening { has a matching closing }`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 9 ── */
-{ level:9, phase:"Phase 2: Decisions", title:"Your First Function",
-  concept:"function",
-  story:"A function is a named block of code that you can run (call) whenever you need it. You write it once, and use it as many times as you want. Functions keep code organized.",
-  task:"Type the function definition AND the function call at the bottom. The function only runs when you call it.",
-  template:`function greet() {\n    console.log("Let's play the guessing game!");\n}\n\ngreet();`,
-  starter:`// Function definition and call:\n`,
-  expected:`Let's play the guessing game!`,
-  explain:`function greet() { ... } defines the function — it gives it a name and describes what it does.\ngreet(); CALLS the function — this is what actually makes it run.\nWithout the greet(); call at the bottom, nothing would print!`,
-  hint:`Two parts:\n1. The function DEFINITION (lines 1-3) — defines what greet() does\n2. The function CALL (line 5) — greet();  — this runs it\nDon't forget the () after greet in both places!`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 10 ── */
-{ level:10, phase:"Phase 2: Decisions", title:"Function with a Parameter",
-  concept:"function parameters",
-  story:"A parameter lets you pass information INTO a function. The function can then use that information to do different things depending on what you give it.",
-  task:"Type this code. The function receives a number and says whether it is big or small. Call it twice with different numbers.",
-  template:`function checkSize(n) {\n    if (n > 5) {\n        console.log("Big number!");\n    } else {\n        console.log("Small number!");\n    }\n}\n\ncheckSize(3);\ncheckSize(9);`,
-  starter:`// Function with a parameter:\n`,
-  expected:`Small number!\nBig number!`,
-  explain:`n is the parameter — it acts like a variable inside the function. When you call checkSize(3), n becomes 3. When you call checkSize(9), n becomes 9. The function runs with each different value.`,
-  hint:`The function name is checkSize. The parameter is n.\ncall with 3 first: checkSize(3); → n is 3 → 3 is not > 5 → "Small number!"\ncall with 9 second: checkSize(9); → n is 9 → 9 > 5 → "Big number!"`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 11 ── */
-{ level:11, phase:"Phase 3: Loops & Data", title:"Return: Getting a Value Back",
-  concept:"return",
-  story:"A function can also GIVE YOU BACK a value using the return keyword. Instead of just printing, it computes something and sends the answer back to wherever it was called from.",
-  task:"Type this code. The function addTen() takes a number, adds 10, and returns the result. We store the result in a variable and print it.",
-  template:`function addTen(n) {\n    return n + 10;\n}\n\nlet result = addTen(5);\nconsole.log(result);`,
-  starter:`// Function with return:\n`,
-  expected:`15`,
-  explain:`return n + 10; sends the value n+10 back out of the function.\nlet result = addTen(5); catches that returned value and stores it in result.\nSo result = 15, and console.log(result) prints 15.`,
-  hint:`addTen(5) calls the function with n = 5.\nInside: return 5 + 10; → returns 15.\nlet result = 15;\nconsole.log(result); → prints 15`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 12 ── */
-{ level:12, phase:"Phase 3: Loops & Data", title:"The While Loop",
-  concept:"while loop",
-  story:"A loop runs the same block of code over and over as long as a condition is true. The while loop keeps going WHILE something is true, and stops when it becomes false.",
-  task:"Type this code. The loop counts from 1 up to 5, printing each number. Without the count = count + 1 line, it would loop forever — that is called an infinite loop!",
-  template:`let count = 1;\n\nwhile (count <= 5) {\n    console.log(count);\n    count = count + 1;\n}`,
-  starter:`// While loop:\n`,
-  expected:`1\n2\n3\n4\n5`,
-  explain:`count starts at 1.\nThe while condition checks: is count <= 5? If yes, print count, add 1, repeat.\nWhen count reaches 6, the condition (6 <= 5) becomes false, and the loop stops.\ncount = count + 1; is called the "increment" — it moves the counter forward each time.`,
-  hint:`let count = 1;  — start counting at 1\nwhile (count <= 5) {  — keep going while count is 5 or less\n    console.log(count);\n    count = count + 1;  — add 1 each time (VERY important!)\n}`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 13 ── */
-{ level:13, phase:"Phase 3: Loops & Data", title:"The For Loop",
-  concept:"for loop",
-  story:"The for loop is a shorter way to write a counting loop. It packs the counter setup, the condition, and the increment all into one line.",
-  task:"Type this code. The for loop counts from 1 to 3 and prints a 'Round' message each time.",
-  template:`for (let i = 1; i <= 3; i++) {\n    console.log("Round " + i);\n}`,
-  starter:`// For loop:\n`,
-  expected:`Round 1\nRound 2\nRound 3`,
-  explain:`let i = 1    → start i at 1\ni <= 3       → keep going while i is 3 or less\ni++          → add 1 to i each time (i++ is shorthand for i = i + 1)\nInside: print "Round " joined with the current value of i.`,
-  hint:`for (let i = 1; i <= 3; i++) {\n    console.log("Round " + i);\n}\nThe three parts inside for() are separated by semicolons.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 14 ── */
-{ level:14, phase:"Phase 3: Loops & Data", title:"Arrays: A List of Items",
-  concept:"arrays, [ ]",
-  story:"An array is an ordered list. Instead of making 10 separate variables, you store 10 items in one array. Each item has an index number — and counting STARTS at 0, not 1.",
-  task:"Type this code. Create an array of three hint messages, then print the first one (index 0) and the third one (index 2).",
-  template:`let hints = ["Too high!", "Too low!", "Correct!"];\n\nconsole.log(hints[0]);\nconsole.log(hints[2]);`,
-  starter:`// Arrays:\n`,
-  expected:`Too high!\nCorrect!`,
-  explain:`hints[0] gets the FIRST item (index 0 = "Too high!").\nhints[1] would get the second item ("Too low!").\nhints[2] gets the THIRD item (index 2 = "Correct!").\nThis "starts at 0" rule surprises everyone at first — it is just how JavaScript works!`,
-  hint:`hints[0] → "Too high!"   (first item, index 0)\nhints[1] → "Too low!"    (second item, index 1)\nhints[2] → "Correct!"    (third item, index 2)`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 15 ── */
-{ level:15, phase:"Phase 3: Loops & Data", title:"Loop Through an Array",
-  concept:"for loop + array.length",
-  story:"You can combine a for loop with an array to automatically do something with every item in the list. array.length tells you how many items are in the array.",
-  task:"Type this code. The loop runs once for each item in the hints array, printing each one with its position number.",
-  template:`let hints = ["Too high!", "Too low!", "Correct!"];\n\nfor (let i = 0; i < hints.length; i++) {\n    console.log("Hint " + (i + 1) + ": " + hints[i]);\n}`,
-  starter:`// Loop through an array:\n`,
-  expected:`Hint 1: Too high!\nHint 2: Too low!\nHint 3: Correct!`,
-  explain:`hints.length is 3 (three items in the array).\ni starts at 0 and goes up to (but not including) 3: i = 0, 1, 2.\nInside: (i + 1) adds 1 to make the display number start at 1 instead of 0.\nhints[i] gets the item at position i each time through the loop.`,
-  hint:`i starts at 0. hints.length = 3.\ni < hints.length means i can be 0, 1, or 2 — three total runs.\n(i+1) converts 0,1,2 to 1,2,3 for the display number.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 16 ── */
-{ level:16, phase:"Phase 4: Game Tools", title:"Random Numbers",
-  concept:"Math.random(), Math.floor()",
-  story:"Games need random numbers! Math.random() gives you a random decimal between 0 and 1. Math.floor() rounds DOWN to the nearest whole number. Combine them to get a random whole number in any range.",
-  task:"Type this code to generate a random whole number from 1 to 10. The last line checks that the number is always in that range.",
-  template:`let random = Math.floor(Math.random() * 10) + 1;\nconsole.log(random >= 1 && random <= 10);`,
-  starter:`// Random numbers:\n`,
-  expected:`true`,
-  explain:`Math.random() → 0.0 to 0.999...\n* 10 → 0.0 to 9.999...\nMath.floor() → 0 to 9\n+ 1 → 1 to 10\nThe && means AND. The condition is true only if BOTH sides are true (random is >= 1 AND <= 10).`,
-  hint:`Math.floor(Math.random() * 10) + 1\nThis ALWAYS gives a whole number from 1 to 10.\nconsole.log(random >= 1 && random <= 10);\nThis will always print: true`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 17 ── */
-{ level:17, phase:"Phase 4: Game Tools", title:"Converting Text to a Number",
-  concept:"parseInt()",
-  story:"When players type into an input box on a web page, the value comes back as TEXT, not a number — even if they typed '7'. parseInt() converts text to a whole number.",
-  task:"Type this code. typed is a text version of 7. parseInt converts it to a real number so math works correctly.",
-  template:`let typed = "7";\nlet number = parseInt(typed);\nconsole.log(typeof typed);\nconsole.log(typeof number);\nconsole.log(number + 3);`,
-  starter:`// parseInt() — text to number:\n`,
-  expected:`string\nnumber\n10`,
-  explain:`typeof tells you the data type of a variable.\n"7" (in quotes) is a string (text) — typeof gives "string".\nparseInt("7") converts it to the actual number 7 — typeof gives "number".\nNow number + 3 does real math: 7 + 3 = 10.`,
-  hint:`Three console.log calls:\n1. typeof typed → "string"  (it's text)\n2. typeof number → "number" (now it's a real number)\n3. number + 3 → 10  (real math works now)`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 18 ── */
-{ level:18, phase:"Phase 4: Game Tools", title:"Build checkGuess()",
-  concept:"function + return + if/else if/else",
-  story:"Now you are going to write your FIRST game function from scratch. checkGuess() is the heart of the guessing game — it compares the player's guess to the secret number and returns a message.",
-  task:"Write the complete checkGuess() function using what you have learned about functions, parameters, return, and if/else if/else. Then call it three times with the test values shown.",
-  template:`// WRITE THE FUNCTION:\nfunction checkGuess(guess, secretNumber) {\n    if (guess === secretNumber) {\n        return "Correct! You got it!";\n    } else if (guess > secretNumber) {\n        return "Too high! Try lower.";\n    } else {\n        return "Too low! Try higher.";\n    }\n}\n\n// TEST IT:\nconsole.log(checkGuess(8, 5));\nconsole.log(checkGuess(2, 7));\nconsole.log(checkGuess(6, 6));`,
-  starter:`// Write checkGuess() below:\n// It takes two parameters: guess and secretNumber\n// Return "Correct! You got it!"  when guess === secretNumber\n// Return "Too high! Try lower."  when guess > secretNumber\n// Return "Too low! Try higher."  when guess is too small\n\n`,
-  expected:`Too high! Try lower.\nToo low! Try higher.\nCorrect! You got it!`,
-  explain:`checkGuess(8, 5): 8 === 5? No. 8 > 5? Yes! → "Too high! Try lower."\ncheckGuess(2, 7): 2 === 7? No. 2 > 7? No. → else → "Too low! Try higher."\ncheckGuess(6, 6): 6 === 6? Yes! → "Correct! You got it!"`,
-  hint:`function checkGuess(guess, secretNumber) {\n    if (guess === secretNumber) { return "Correct! You got it!"; }\n    else if (guess > secretNumber) { return "Too high! Try lower."; }\n    else { return "Too low! Try higher."; }\n}`,
-  checkType:"function",
-  testCode:`
-    let r1 = checkGuess(8,5);
-    let r2 = checkGuess(2,7);
-    let r3 = checkGuess(6,6);
-    console.log(r1); console.log(r2); console.log(r3);
-  `,
-  testExpected:`Too high! Try lower.\nToo low! Try higher.\nCorrect! You got it!`
-},
-
-/* ── LEVEL 19 ── */
-{ level:19, phase:"Phase 4: Game Tools", title:"Build getScore()",
-  concept:"function + return + if/else chain",
-  story:"The scoring system rewards players who guess with fewer tries. getScore() returns a point value based on how many attempts the player used. Fewer attempts = more points!",
-  task:"Write the complete getScore() function. Then call it with 1, 3, and 5 to see the three different scores.",
-  template:`function getScore(attempts) {\n    if (attempts === 1) {\n        return 100;\n    } else if (attempts === 2) {\n        return 80;\n    } else if (attempts === 3) {\n        return 60;\n    } else if (attempts === 4) {\n        return 40;\n    } else {\n        return 20;\n    }\n}\n\nconsole.log("1 attempt:  " + getScore(1) + " points");\nconsole.log("3 attempts: " + getScore(3) + " points");\nconsole.log("5 attempts: " + getScore(5) + " points");`,
-  starter:`// Write getScore() below:\n// Parameter: attempts (the number of guesses the player used)\n// Return 100 for 1 attempt, 80 for 2, 60 for 3, 40 for 4, 20 otherwise\n\n`,
-  expected:`1 attempt:  100 points\n3 attempts: 60 points\n5 attempts: 20 points`,
-  explain:`This function is a chain of if/else if checks.\nEach one checks a specific value of attempts and returns the matching score.\nThe final else catches anything that wasn't matched above (attempts 5 or more).`,
-  hint:`function getScore(attempts) {\n    if (attempts === 1) { return 100; }\n    else if (attempts === 2) { return 80; }\n    else if (attempts === 3) { return 60; }\n    else if (attempts === 4) { return 40; }\n    else { return 20; }\n}`,
-  checkType:"function",
-  testCode:`
-    let s1 = getScore(1); let s2 = getScore(3); let s3 = getScore(5);
-    console.log("1 attempt:  " + s1 + " points");
-    console.log("3 attempts: " + s2 + " points");
-    console.log("5 attempts: " + s3 + " points");
-  `,
-  testExpected:`1 attempt:  100 points\n3 attempts: 60 points\n5 attempts: 20 points`
-},
-
-/* ── LEVEL 20 ── */
-{ level:20, phase:"Phase 4: Game Tools", title:"Game Variables Setup",
-  concept:"let, Math.floor, Math.random",
-  story:"Every game needs variables to track the state: what the secret number is, how many guesses the player has used, and when the game is over. Let's set up all the variables our game needs.",
-  task:"Type this code to initialize all the game's starting variables and print information about them.",
-  template:`let secretNumber = Math.floor(Math.random() * 10) + 1;\nlet attempts = 0;\nlet maxAttempts = 5;\n\nconsole.log("Secret number set! (between 1-10)");\nconsole.log("Attempts used: " + attempts);\nconsole.log("Max attempts allowed: " + maxAttempts);\nconsole.log("Is secret in range? " + (secretNumber >= 1 && secretNumber <= 10));`,
-  starter:`// Game variables:\n`,
-  expected:`Secret number set! (between 1-10)\nAttempts used: 0\nMax attempts allowed: 5\nIs secret in range? true`,
-  explain:`secretNumber gets a random number 1-10 right away.\nattempts starts at 0 — the player hasn't guessed yet.\nmaxAttempts is 5 — the player gets 5 tries.\nThese three variables will be used by our game functions in the next levels!`,
-  hint:`Four console.log lines. The last one checks (secretNumber >= 1 && secretNumber <= 10).\nThis will always be true since Math.floor(Math.random()*10)+1 always gives 1-10.`,
-  checkType:"contains_all",
-  expectedArr:["Secret number set! (between 1-10)","Attempts used: 0","Max attempts allowed: 5","Is secret in range? true"]
-},
-
-/* ── LEVEL 21 ── */
-{ level:21, phase:"Phase 5: Build the Game", title:"Simulate makeGuess()",
-  concept:"combining functions + variables",
-  story:"makeGuess() is what runs each time the player clicks the Guess button. It updates the attempt count, calls checkGuess(), and reports what happened. Let's simulate it using console.log.",
-  task:"Type all the code shown. This simulates three turns of guessing and shows exactly what makeGuess() does each time.",
-  template:`let secretNumber = 7;\nlet attempts = 0;\n\nfunction checkGuess(guess, secret) {\n    if (guess === secret) return "Correct!";\n    if (guess > secret) return "Too high!";\n    return "Too low!";\n}\n\nfunction makeGuess(guess) {\n    attempts = attempts + 1;\n    let result = checkGuess(guess, secretNumber);\n    console.log("Guess " + attempts + ": " + guess + " — " + result);\n}\n\nmakeGuess(3);\nmakeGuess(9);\nmakeGuess(7);`,
-  starter:`// Simulate makeGuess():\n`,
-  expected:`Guess 1: 3 — Too low!\nGuess 2: 9 — Too high!\nGuess 3: 7 — Correct!`,
-  explain:`makeGuess() does three things:\n1. Adds 1 to attempts (tracking the count)\n2. Calls checkGuess() to get a result message\n3. Prints what happened\nEach call to makeGuess() moves the game forward by one turn.`,
-  hint:`The function makeGuess(guess) uses the outer variable attempts.\nattempts = attempts + 1; adds one each call.\nresult = checkGuess(guess, secretNumber); calls the other function.`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 22 ── */
-{ level:22, phase:"Phase 5: Build the Game", title:"How Pages Update: DOM Preview",
-  concept:"document.getElementById, textContent",
-  story:"In a real web page, we use document.getElementById() to find an HTML element and .textContent to change what it displays. Let's simulate this to understand how our game will update the screen.",
-  task:"Type this simulation. Each showOnPage() call represents what would happen in the real browser when a guess is made.",
-  template:`// Simulation of DOM updates\nfunction showOnPage(elementId, text) {\n    console.log("[" + elementId + "] → " + text);\n}\n\nlet guess = 8;\nlet secret = 5;\nlet attempts = 1;\n\nif (guess > secret) {\n    showOnPage("message", "Too high! Try lower.");\n}\nshowOnPage("attempts", "Attempts: " + attempts + " / 5");\nshowOnPage("score", "");`,
-  starter:`// DOM simulation:\n`,
-  expected:`[message] → Too high! Try lower.\n[attempts] → Attempts: 1 / 5\n[score] → `,
-  explain:`In the real game:\ndocument.getElementById("message").textContent = "Too high!";\n...works exactly like our showOnPage("message", ...) simulation.\nThe browser finds the element with id="message" and updates its text.\nThis is how JavaScript controls what you see on a web page!`,
-  hint:`showOnPage() just simulates what the real DOM code does.\nOutput format: [elementId] → the text\nThree calls: message, attempts, score`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 23 ── */
-{ level:23, phase:"Phase 5: Build the Game", title:"Build playAgain()",
-  concept:"function + resetting variables",
-  story:"When the game ends, the player should be able to start over. playAgain() resets all the game variables back to their starting values so everything is fresh for a new round.",
-  task:"Write the resetGame() function that resets secretNumber, attempts, and prints what was reset. The simulation shows it working.",
-  template:`let secretNumber = 5;\nlet attempts = 3;\n\nfunction resetGame() {\n    secretNumber = Math.floor(Math.random() * 10) + 1;\n    attempts = 0;\n    console.log("New secret number chosen!");\n    console.log("Attempts reset to: " + attempts);\n    console.log("Ready to play again!");\n}\n\nconsole.log("Before reset — attempts: " + attempts);\nresetGame();\nconsole.log("After reset — attempts: " + attempts);`,
-  starter:`// Build playAgain() / resetGame():\n`,
-  expected:`Before reset — attempts: 3\nNew secret number chosen!\nAttempts reset to: 0\nReady to play again!\nAfter reset — attempts: 0`,
-  explain:`resetGame() changes the global variables secretNumber and attempts.\nAfter calling it:\n- secretNumber is a brand new random number\n- attempts goes back to 0\nThe game is completely fresh. This is what happens when the player clicks "Play Again!"`,
-  hint:`Five console.log calls total:\n1. Before reset (attempts = 3)\n2-4. Inside resetGame(): three log messages\n5. After reset (attempts = 0, because resetGame set it back)`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 24 ── */
-{ level:24, phase:"Phase 5: Build the Game", title:"The Full Game Simulation",
-  concept:"all functions working together",
-  story:"This is the complete game logic simulated with console.log. Every function you have built works together here. This is the last step before the real interactive game!",
-  task:"Type this complete simulation. It plays through an entire round: setup, three guesses, a correct answer, and a final score.",
-  template:`// === FULL GAME SIMULATION ===\n\nlet secretNumber = 6;\nlet attempts = 0;\nlet maxAttempts = 5;\n\nfunction checkGuess(guess, secret) {\n    if (guess === secret) return "Correct! You got it!";\n    if (guess > secret) return "Too high! Try lower.";\n    return "Too low! Try higher.";\n}\n\nfunction getScore(n) {\n    if (n === 1) return 100;\n    if (n === 2) return 80;\n    if (n === 3) return 60;\n    if (n === 4) return 40;\n    return 20;\n}\n\nfunction makeGuess(guess) {\n    attempts = attempts + 1;\n    let result = checkGuess(guess, secretNumber);\n    console.log("Guess " + attempts + ": " + guess + " — " + result);\n    if (guess === secretNumber) {\n        console.log("Score: " + getScore(attempts) + " points!");\n    }\n}\n\nconsole.log("--- GAME START ---");\nconsole.log("Secret number is set.");\nmakeGuess(3);\nmakeGuess(9);\nmakeGuess(6);\nconsole.log("--- GAME OVER ---");`,
-  starter:`// Full game simulation:\n`,
-  expected:`--- GAME START ---\nSecret number is set.\nGuess 1: 3 — Too low! Try lower.\nGuess 2: 9 — Too high! Try lower.\nGuess 3: 6 — Correct! You got it!\nScore: 60 points!\n--- GAME OVER ---`,
-  explain:`This simulation shows the EXACT same logic that runs in your real game.\nThe only difference in the final game: instead of console.log, we use document.getElementById().textContent\nto show results on the page. The logic is identical!`,
-  hint:`makeGuess(3) with secret=6: "Too low!"\nmakeGuess(9) with secret=6: "Too high!"\nmakeGuess(6) with secret=6: "Correct!" + score\ngetScore(3) = 60 points (3rd try)`,
-  checkType:"exact"
-},
-
-/* ── LEVEL 25 ── */
-{ level:25, phase:"Phase 5: Build the Game", title:"YOUR COMPLETE GAME!",
-  concept:"Complete JavaScript Game",
-  story:"This is it. Every concept you have learned across 24 levels comes together right here. This is your complete, playable Number Guessing Game — fully written in JavaScript, ready to run in any browser, and yours to keep.",
-  task:"The complete game code is ready for you below. Type it in full — every line — to see your finished program. Then press RUN GAME to play it live, and DOWNLOAD to save it as your own file.",
-  template:`// ================================\n// NUMBER GUESSING GAME\n// Built by a Grindstaff MS Coder!\n// ================================\n\n// --- VARIABLES ---\nlet secretNumber = Math.floor(Math.random() * 10) + 1;\nlet attempts = 0;\nlet maxAttempts = 5;\n\n// --- FUNCTION 1: checkGuess ---\nfunction checkGuess(guess, secret) {\n    if (guess === secret) {\n        return "Correct! You got it!";\n    } else if (guess > secret) {\n        return "Too high! Try a lower number.";\n    } else {\n        return "Too low! Try a higher number.";\n    }\n}\n\n// --- FUNCTION 2: getScore ---\nfunction getScore(attemptsUsed) {\n    if (attemptsUsed === 1) return 100;\n    if (attemptsUsed === 2) return 80;\n    if (attemptsUsed === 3) return 60;\n    if (attemptsUsed === 4) return 40;\n    return 20;\n}\n\n// --- FUNCTION 3: makeGuess ---\nfunction makeGuess() {\n    let inputValue = document.getElementById("guessInput").value;\n    let guess = parseInt(inputValue);\n    if (isNaN(guess) || guess < 1 || guess > 10) {\n        document.getElementById("message").textContent = "Enter a number 1-10!";\n        return;\n    }\n    attempts = attempts + 1;\n    let result = checkGuess(guess, secretNumber);\n    document.getElementById("message").textContent = result;\n    document.getElementById("attempts").textContent = "Attempts: " + attempts + " / " + maxAttempts;\n    if (guess === secretNumber) {\n        let score = getScore(attempts);\n        document.getElementById("score").textContent = "Score: " + score + " points!";\n        document.getElementById("playAgainBtn").style.display = "block";\n    } else if (attempts >= maxAttempts) {\n        document.getElementById("message").textContent = "Out of guesses! The number was " + secretNumber + ".";\n        document.getElementById("score").textContent = "Score: 20 points.";\n        document.getElementById("playAgainBtn").style.display = "block";\n    }\n}\n\n// --- FUNCTION 4: playAgain ---\nfunction playAgain() {\n    secretNumber = Math.floor(Math.random() * 10) + 1;\n    attempts = 0;\n    document.getElementById("message").textContent = "Type a number and click the button!";\n    document.getElementById("attempts").textContent = "Attempts: 0 / 5";\n    document.getElementById("score").textContent = "";\n    document.getElementById("playAgainBtn").style.display = "none";\n    document.getElementById("guessInput").value = "";\n}`,
-  starter:`// Type the complete game below:\n`,
-  expected:`GAME_PREVIEW`,
-  explain:`Your game uses ALL the concepts from this challenge:\n✓ Variables (secretNumber, attempts, maxAttempts)\n✓ Math.random() and Math.floor() for the secret number\n✓ Functions with parameters and return values\n✓ If / else if / else for game logic\n✓ parseInt() to convert input to a number\n✓ document.getElementById() to update the page`,
-  hint:`Copy the full template code carefully.\nAll four functions: checkGuess, getScore, makeGuess, playAgain.\nThe DOM functions (document.getElementById) connect to the game's HTML page.`,
-  checkType:"game"
-}
-
+  {
+    level: 1,
+    title: "Hello, World!",
+    concept: "console.log()",
+    story: "Every coder starts here. Use the computer's voice to say hello.",
+    task: "Type the code below exactly. Don't forget the quotes!",
+    template: 'console.log("Hello, World!");',
+    starter: "// Type below:\n",
+    expected: "Hello, World!",
+  },
+  {
+    level: 2,
+    title: "The Box (Variables)",
+    concept: "let",
+    story: "Variables store data. Think of 'let' as labeling a box.",
+    task: "Create a variable named 'hero' and assign it the name 'Alex'.",
+    template: 'let hero = "Alex";\nconsole.log(hero);',
+    starter: "// Create variable:\n",
+    expected: "Alex",
+  },
+  {
+    level: 3,
+    title: "Math Power",
+    concept: "Operators",
+    story: "Computers are great at math. Let's add some points.",
+    task: "Set score to 5, then add 10 to it.",
+    template: 'let score = 5;\nscore = score + 10;\nconsole.log(score);',
+    starter: "// Do some math:\n",
+    expected: "15",
+  }
+  // Add more levels here...
 ];
 
-/* ═══════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════ */
-let currentLevel = parseInt(localStorage.getItem('jsbuild_level') || '0');
-let wrongAttempts = 0;
-let completedLevels = JSON.parse(localStorage.getItem('jsbuild_completed') || '[]');
+let currentIdx = 0;
 
-/* ═══════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════ */
-(function init() {
-  buildDots();
-  renderLevel(currentLevel);
-  document.getElementById('code-editor').addEventListener('input', updateLineNums);
-  document.getElementById('code-editor').addEventListener('keydown', handleTab);
-})();
-
-function buildDots() {
-  const wrap = document.getElementById('dots');
-  wrap.innerHTML = '';
-  for (let i = 0; i < 25; i++) {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i < currentLevel ? ' done' : i === currentLevel ? ' active' : '');
-    d.title = 'Level ' + (i + 1);
-    wrap.appendChild(d);
-  }
-}
-
-function handleTab(e) {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const ta = document.getElementById('code-editor');
-    const s = ta.selectionStart, end = ta.selectionEnd;
-    ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(end);
-    ta.selectionStart = ta.selectionEnd = s + 4;
-    updateLineNums();
-  }
-}
-
-function updateLineNums() {
-  const ta = document.getElementById('code-editor');
-  const lines = ta.value.split('\n').length;
-  let html = '';
-  for (let i = 1; i <= Math.max(lines, 1); i++) html += i + '\n';
-  document.getElementById('line-nums').textContent = html;
-}
-
-/* ═══════════════════════════════════════════════
-   RENDER LEVEL
-═══════════════════════════════════════════════ */
-function renderLevel(idx) {
-  const lv = LEVELS[idx];
-  if (!lv) return;
-
-  // Header
-  document.getElementById('level-num').textContent = 'LEVEL ' + String(lv.level).padStart(2, '0');
-  document.getElementById('level-title').textContent = lv.title;
-  document.getElementById('concept-badge').textContent = lv.concept;
-  document.getElementById('phase-badge').textContent = lv.phase;
-  document.getElementById('lnum').textContent = lv.level;
-  document.getElementById('level-counter').textContent = 'LV ' + String(lv.level).padStart(2, '0');
-
-  // Content
-  document.getElementById('story-text').textContent = lv.story;
-  document.getElementById('instruction-box').textContent = lv.task;
-  document.getElementById('template-box').textContent = lv.template;
-  document.getElementById('explain-box').textContent = lv.explain;
-
-  // Expected
-  const expBox = document.getElementById('expected-box');
-  if (lv.checkType === 'game') {
-    expBox.textContent = '→ Your game will run live in a preview below the editor.';
-  } else if (lv.checkType === 'contains_all') {
-    expBox.textContent = lv.expectedArr.join('\n');
-  } else {
-    expBox.textContent = lv.expected;
-  }
-
-  // Hint
-  document.getElementById('hint-box').textContent = '💡 HINT: ' + lv.hint;
-  document.getElementById('hint-box').classList.remove('show');
-
-  // Editor
-  const editor = document.getElementById('code-editor');
-  editor.value = lv.starter;
-  updateLineNums();
-
-  // Reset state
-  wrongAttempts = 0;
-  document.getElementById('wrong-count').textContent = '';
-  document.getElementById('output-text').textContent = '// Press RUN to see your output here...';
-  document.getElementById('output-status').textContent = '';
-  document.getElementById('output-status').className = '';
-  document.getElementById('feedback').className = 'hide';
-  document.getElementById('feedback').style.display = 'none';
-  document.getElementById('next-btn').style.display = 'none';
-
-  // Level 25 game preview
-  const previewWrap = document.getElementById('game-preview-wrap');
-  const outputPanel = document.getElementById('output-panel');
-  if (lv.checkType === 'game') {
-    previewWrap.style.display = 'none'; // show after RUN
-    outputPanel.style.display = 'flex';
-  } else {
-    previewWrap.style.display = 'none';
-    outputPanel.style.display = 'flex';
-  }
-
-  buildDots();
-}
-
-/* ═══════════════════════════════════════════════
-   RUN CODE
-═══════════════════════════════════════════════ */
+// ── COMPILER ENGINE ──
 function runCode() {
-  const lv = LEVELS[currentLevel];
-  const code = document.getElementById('code-editor').value;
+    const code = document.getElementById('code-editor').value;
+    const outputDiv = document.getElementById('output-text');
+    outputDiv.innerText = ""; // Clear
+    
+    // Capture console.log
+    const originalLog = console.log;
+    console.log = function(...args) {
+        outputDiv.innerText += args.join(" ") + "\n";
+    };
 
-  if (lv.checkType === 'game') {
-    runGamePreview(code);
-    return;
-  }
-
-  const { output, error } = execCode(code);
-  const outEl = document.getElementById('output-text');
-  const statusEl = document.getElementById('output-status');
-
-  if (error) {
-    outEl.innerHTML = `<span class="out-line-err">ERROR: ${escHtml(error)}</span>`;
-    statusEl.textContent = '✗ ERROR'; statusEl.className = 'err';
-    showDebugTip(error);
-  } else if (!output.trim()) {
-    outEl.textContent = '(nothing printed — did you forget console.log?)';
-    statusEl.textContent = ''; statusEl.className = '';
-  } else {
-    outEl.textContent = output;
-    statusEl.textContent = '✓ RAN'; statusEl.className = 'ok';
-  }
-}
-
-function execCode(code) {
-  const lines = [];
-  const origLog = console.log;
-  console.log = (...args) => lines.push(args.map(a => String(a)).join(' '));
-  let error = null;
-  try { eval(code); } catch(e) { error = e.message; }
-  console.log = origLog;
-  return { output: lines.join('\n'), error };
-}
-
-function runGamePreview(code) {
-  const previewWrap = document.getElementById('game-preview-wrap');
-  const iframe = document.getElementById('game-iframe');
-  previewWrap.style.display = 'flex';
-  document.getElementById('output-panel').style.display = 'none';
-  iframe.srcdoc = COMPLETE_GAME_HTML;
-  // Mark as passing
-  document.getElementById('feedback').className = 'pass';
-  document.getElementById('feedback').style.display = 'block';
-  document.getElementById('feedback').textContent = '🎉 YOUR GAME IS RUNNING! Play it above, then download it to keep it forever.';
-  document.getElementById('next-btn').style.display = 'none';
-  // Show completion
-  setTimeout(() => {
-    completedLevels.push(currentLevel);
-    localStorage.setItem('jsbuild_completed', JSON.stringify(completedLevels));
-    buildDots();
-    setTimeout(() => {
-      document.getElementById('completion').style.display = 'flex';
-    }, 1200);
-  }, 800);
-}
-
-function showDebugTip(error) {
-  const tips = {
-    'Unexpected token':   '→ Debug tip: Check for a missing { } ( ) or a typo in a keyword.',
-    'is not defined':     '→ Debug tip: You used a variable or function name that was not created yet. Check spelling.',
-    'SyntaxError':        '→ Debug tip: There is a syntax error. Check that every opening { has a closing }, and every ( has a ).',
-    'Unexpected end':     '→ Debug tip: Something is missing at the end — a closing } or ) perhaps.',
-    'is not a function':  '→ Debug tip: You are trying to call something as a function but it is not one. Check the function name spelling.',
-  };
-  for (const [key, tip] of Object.entries(tips)) {
-    if (error.includes(key)) {
-      document.getElementById('output-text').innerHTML +=
-        `\n\n<span style="color:var(--accent-lt);font-size:12px">${tip}</span>`;
-      break;
+    try {
+        eval(code);
+    } catch (err) {
+        outputDiv.innerText = "ERROR: " + err.message;
     }
-  }
+
+    console.log = originalLog; // Restore console
 }
 
-/* ═══════════════════════════════════════════════
-   CHECK CODE
-═══════════════════════════════════════════════ */
 function checkCode() {
-  const lv = LEVELS[currentLevel];
-  const code = document.getElementById('code-editor').value;
-  const feedEl = document.getElementById('feedback');
-  const nextBtn = document.getElementById('next-btn');
+    runCode();
+    const output = document.getElementById('output-text').innerText.trim();
+    const expected = LEVELS[currentIdx].expected.trim();
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
 
-  if (lv.checkType === 'game') {
-    runGamePreview(code); return;
-  }
-
-  let passed = false;
-  let codeToRun = code;
-  let expectedForCheck = '';
-
-  if (lv.checkType === 'function') {
-    codeToRun = code + '\n' + lv.testCode;
-    expectedForCheck = lv.testExpected;
-  } else if (lv.checkType === 'contains_all') {
-    const { output, error } = execCode(code);
-    if (error) {
-      showFail(feedEl, `Your code has an error: ${error}`);
-      wrongAttempts++;
-      updateWrongCount();
-      return;
+    if (output === expected) {
+        feedback.innerText = "SUCCESS! Access Granted.";
+        feedback.className = "pass";
+        nextBtn.style.display = "block";
+        document.querySelectorAll('.dot')[currentIdx].classList.add('done');
+    } else {
+        feedback.innerText = "FAIL! Output does not match. Try again.";
+        feedback.className = "fail";
+        nextBtn.style.display = "none";
     }
-    passed = lv.expectedArr.every(s => output.includes(s));
-    if (passed) { showPass(feedEl, nextBtn); }
-    else { handleFail(feedEl, output, lv.expectedArr.join('\n')); }
-    return;
-  } else {
-    expectedForCheck = lv.expected;
-  }
-
-  const { output, error } = execCode(codeToRun);
-
-  if (error) {
-    showFail(feedEl, `Your code has an error: ${error}`);
-    wrongAttempts++;
-    updateWrongCount();
-    document.getElementById('output-text').innerHTML =
-      `<span class="out-line-err">ERROR: ${escHtml(error)}</span>`;
-    showDebugTip(error);
-    return;
-  }
-
-  document.getElementById('output-text').textContent = output;
-  document.getElementById('output-status').textContent = '✓ RAN';
-  document.getElementById('output-status').className = 'ok';
-
-  passed = output.trim() === expectedForCheck.trim();
-
-  if (passed) {
-    showPass(feedEl, nextBtn);
-  } else {
-    handleFail(feedEl, output, expectedForCheck);
-  }
-}
-
-function handleFail(feedEl, got, expected) {
-  wrongAttempts++;
-  updateWrongCount();
-  const gotClean = got.trim();
-  const expClean = expected.trim();
-  showFail(feedEl, `Not quite — your output doesn't match yet.\nGot:      ${gotClean || '(nothing)'}\nExpected: ${expClean}`);
-  if (wrongAttempts >= 2) {
-    document.getElementById('hint-box').classList.add('show');
-  }
-}
-
-function showPass(feedEl, nextBtn) {
-  completedLevels.push(currentLevel);
-  localStorage.setItem('jsbuild_completed', JSON.stringify(completedLevels));
-  feedEl.className = 'pass';
-  feedEl.style.display = 'block';
-  feedEl.textContent = '✓ CORRECT! Great work — your code produces the right output. Click NEXT LEVEL to continue.';
-  nextBtn.style.display = 'inline-block';
-  wrongAttempts = 0;
-  document.getElementById('wrong-count').textContent = '';
-  buildDots();
-}
-
-function showFail(feedEl, msg) {
-  feedEl.className = 'fail';
-  feedEl.style.display = 'block';
-  feedEl.textContent = msg;
-}
-
-function updateWrongCount() {
-  const wc = document.getElementById('wrong-count');
-  if (wrongAttempts >= 2) {
-    wc.textContent = `${wrongAttempts} wrong attempts — hint is showing`;
-    wc.style.color = 'var(--accent-lt)';
-  } else {
-    wc.textContent = `${wrongAttempts} wrong attempt${wrongAttempts===1?'':'s'}`;
-    wc.style.color = 'var(--dim)';
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   CONTROLS
-═══════════════════════════════════════════════ */
-function showHint() {
-  document.getElementById('hint-box').classList.add('show');
-}
-
-function clearEditor() {
-  document.getElementById('code-editor').value = LEVELS[currentLevel].starter;
-  document.getElementById('output-text').textContent = '// Press RUN to see your output here...';
-  document.getElementById('output-status').textContent = '';
-  document.getElementById('feedback').style.display = 'none';
-  document.getElementById('next-btn').style.display = 'none';
-  updateLineNums();
 }
 
 function nextLevel() {
-  if (currentLevel < LEVELS.length - 1) {
-    currentLevel++;
-    localStorage.setItem('jsbuild_level', currentLevel);
-    renderLevel(currentLevel);
-    window.scrollTo(0, 0);
-  }
+    currentIdx++;
+    if (currentIdx < LEVELS.length) {
+        loadLevel(currentIdx);
+    } else {
+        alert("CHALLENGE COMPLETE! You are a JS Master.");
+    }
 }
 
-function downloadGame() {
-  const blob = new Blob([COMPLETE_GAME_HTML], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'my-number-guessing-game.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+function loadLevel(idx) {
+    const lvl = LEVELS[idx];
+    document.getElementById('level-display').innerText = "LEVEL " + (lvl.level < 10 ? "0" + lvl.level : lvl.level);
+    document.getElementById('level-title').innerText = lvl.title;
+    document.getElementById('concept-badge').innerText = lvl.concept;
+    document.getElementById('story-text').innerText = lvl.story;
+    document.getElementById('instruction-box').innerText = lvl.task;
+    document.getElementById('template-box').innerText = lvl.template;
+    document.getElementById('expected-box').innerText = "Expected: " + lvl.expected;
+    document.getElementById('code-editor').value = lvl.starter;
+    document.getElementById('feedback').style.display = "none";
+    document.getElementById('next-btn').style.display = "none";
+    document.getElementById('output-text').innerText = "System ready...";
+    
+    // Update Progress Dots
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((d, i) => {
+        d.classList.remove('active');
+        if(i === idx) d.classList.add('active');
+    });
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+// ── INITIALIZE ──
+const dotContainer = document.getElementById('dots');
+LEVELS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dotContainer.appendChild(dot);
+});
+
+loadLevel(0);
 </script>
 </body>
 </html>
